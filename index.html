@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <meta charset="utf-8" />
+    <title>DS Game Present</title>
+    <style>
+    	* { padding: 0; margin: 0; }
+    	canvas { background: rgb(0,38,22); display: block; margin: 0 auto; }
+		body {
+    background-image: url("E:\game.jpg");
+}
+    </style>
+</head>
+<body>
+<h1 align="center" style="color:rgb(255, 99, 71)">Break Out Game</h1>
+
+<canvas id="myCanvas" width="640%" height="480%"></canvas>
+
+<script>
+var canvas = document.getElementById("myCanvas");
+var ctx = canvas.getContext("2d");
+
+var ballR = 8;	// ball size
+var ballSpeed = 20;	// control motion speed
+
+var padH = 7; 	//pad size
+var padW = 75;
+
+var rightPressed = false; // get the keyboard inputs
+var leftPressed = false;
+
+var x = canvas.width/2;
+var y = canvas.height-30;
+
+var padCon = (canvas.width-padW)/2;
+
+var dx = 2;   //Can change motion path
+var dy = -2;
+
+var brickRowCount = 3;				// information about bricks
+var brickColumnCount = 7;
+var brickWidth = 75;
+var brickHeight = 20;
+var brickPadding = 10;
+var brickOffsetTop = 30;
+var brickOffsetLeft = 30;
+
+var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+
+var bricks = [];
+for(var c=0; c<brickColumnCount; c++) {
+    bricks[c] = [];
+    for(var r=0; r<brickRowCount; r++) {
+        bricks[c][r] = { x: 0, y: 0 };
+    }
+}
+
+function ball(){
+ctx.beginPath();
+ctx.arc(x, y, ballR, 0, Math.PI*2, false);    
+ctx.fillStyle = "rgb(255,255,71)";
+ctx.fill();
+ctx.closePath();}
+
+function pad(){
+ctx.beginPath();
+ctx.rect(padCon, canvas.height-10-padH,padW,padH );    
+ctx.fillStyle = "rgb(255,255,71)";
+ctx.fill();
+ctx.closePath();}
+
+
+function draw() {
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+ball();
+pad();
+drawBricks();
+if(x + dx > (canvas.width-ballR) || x + dx < ballR) {
+    dx = -dx;
+}
+
+if(y + dy > (canvas.height-ballR)|| y + dy < ballR) {
+    dy = -dy;
+}
+if(y + dy < ballR) {
+    dy = -dy;
+} else if(y + dy > canvas.height-ballR-14) {
+    if(x > padCon - 2*ballR && x < padCon + padW +2*ballR) {
+		//if((padCon+(padW/2) -x)==0){
+		//dx=2;
+		//}else if((padCon+(padW/2) -x)<0){
+		//dx=-dx;
+		//dx=-6;
+		//ballSpeed+100;
+		//}else{
+		//dx=6;
+		//ballSpeed+100;
+		//}
+		
+        dy = -dy;
+    }
+    else {
+        alert("GAME OVER");
+        document.location.reload();
+    }
+}
+
+
+x += dx;
+y += dy;
+
+if(rightPressed && padCon < canvas.width-padW) {
+    padCon += 7;
+}
+else if(leftPressed && padCon > 0) {
+    padCon -= 7;
+}
+
+
+
+}
+
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+
+setInterval(draw, ballSpeed); 		
+
+function keyDownHandler(e) {
+											//left 
+    if(e.keyCode == 39) {
+        rightPressed = true;
+    }
+    else if(e.keyCode == 37) {
+        leftPressed = true;
+    }							
+}
+
+function keyUpHandler(e) {
+											//right
+    if(e.keyCode == 39) {
+        rightPressed = false;
+    }
+    else if(e.keyCode == 37) {
+        leftPressed = false;
+    }
+}
+
+function drawBricks() {
+    for(var c=0; c<brickColumnCount; c++) {
+        for(var r=0; r<brickRowCount; r++) {
+            var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+            var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+            bricks[c][r].x = brickX;
+            bricks[c][r].y = brickY;
+            ctx.beginPath();
+            ctx.rect(brickX, brickY, brickWidth, brickHeight);
+            ctx.fillStyle = "rgb(255,255,71)";
+            ctx.fill();
+            ctx.closePath();
+        }
+    }
+}
+
+</script>
+
+</body>
+</html>
